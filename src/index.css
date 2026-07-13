@@ -1,0 +1,261 @@
+/* ─── Typography ─────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@import "tailwindcss";
+
+/* ─── Design Tokens ──────────────────────────────────────────────────────── */
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Light Theme - Clean, high contrast */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-glass: rgba(255, 255, 255, 0.75);
+  --bg-glass-hover: rgba(255, 255, 255, 0.9);
+  --border-glass: rgba(15, 23, 42, 0.08);
+  --border-subtle: rgba(15, 23, 42, 0.05);
+
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+
+  --accent-primary: #4f46e5;
+  --accent-primary-soft: rgba(79, 70, 229, 0.08);
+  --accent-emerald: #059669;
+  --accent-emerald-soft: rgba(5, 150, 105, 0.08);
+  --accent-rose: #d90429;
+  --accent-rose-soft: rgba(217, 4, 41, 0.08);
+
+  --glass-blur: 20px;
+  --glass-shadow: 0 8px 32px rgba(15, 23, 42, 0.04);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-full: 9999px;
+}
+
+.dark {
+  /* Dark Theme - Pure Black OLED compatibility */
+  --bg-primary: #000000;
+  --bg-secondary: #000000;
+  --bg-glass: rgba(20, 20, 20, 0.6);
+  --bg-glass-hover: rgba(30, 30, 30, 0.8);
+  --border-glass: rgba(255, 255, 255, 0.09);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #475569;
+
+  --accent-primary: #6366f1;
+  --accent-primary-soft: rgba(99, 102, 241, 0.1);
+  --accent-emerald: #10b981;
+  --accent-emerald-soft: rgba(16, 185, 129, 0.08);
+  --accent-rose: #f43f5e;
+  --accent-rose-soft: rgba(244, 63, 94, 0.08);
+
+  --glass-blur: 24px;
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+/* ─── Base Reset ─────────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100dvh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Force pointer cursor on interactive components */
+  button,
+  a,
+  select,
+  input[type="checkbox"],
+  input[type="radio"],
+  input[type="file"],
+  [role="button"] {
+    cursor: pointer !important;
+  }
+
+  /* OLED-optimized scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-glass);
+    border-radius: var(--radius-full);
+  }
+}
+
+/* ─── Glass Utilities ────────────────────────────────────────────────────── */
+@layer utilities {
+  .glass {
+    background: var(--bg-glass);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--border-glass);
+    box-shadow: var(--glass-shadow);
+    border-radius: var(--radius);
+  }
+
+  .glass-hover {
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .glass-hover:hover {
+    background: var(--bg-glass-hover);
+    border-color: rgba(99, 102, 241, 0.25);
+    box-shadow: 0 12px 40px rgba(99, 102, 241, 0.1);
+  }
+
+  .glass-input {
+    background: var(--bg-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .glass-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px var(--accent-primary-soft);
+  }
+  .glass-input::placeholder {
+    color: var(--text-muted);
+  }
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────── */
+@layer utilities {
+  @keyframes modal-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  @keyframes modal-out {
+    from {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.95) translateY(10px);
+    }
+  }
+
+  @keyframes backdrop-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes toast-out {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes pulse-dot {
+    0%, 80%, 100% {
+      opacity: 0.3;
+      transform: scale(0.8);
+    }
+    40% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .animate-modal-in {
+    animation: modal-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-backdrop-in {
+    animation: backdrop-in 0.2s ease forwards;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-toast-in {
+    animation: toast-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-toast-out {
+    animation: toast-out 0.3s ease forwards;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease forwards;
+  }
+}
+
+/* ─── Dialog / Modal Overrides ───────────────────────────────────────────── */
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+dialog[open] {
+  animation: modal-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+dialog[open]::backdrop {
+  animation: backdrop-in 0.2s ease forwards;
+}
