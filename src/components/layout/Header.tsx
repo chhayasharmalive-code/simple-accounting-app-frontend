@@ -5,29 +5,7 @@ import { useState, useRef, useEffect } from 'react'
 
 import { NavLink } from 'react-router-dom'
 
-// Colorful Google Logo brand icon
-function GoogleLogo({ className = "w-[18px] h-[18px]" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none">
-      <path
-        fill="#EA4335"
-        d="M5.266 9.765A7.077 7.077 0 0112 4.909c1.69 0 3.218.6 4.418 1.582L19.91 3A11.97 11.97 0 0012 0C7.305 0 3.284 2.56 1.145 6.327l4.12 3.438z"
-      />
-      <path
-        fill="#34A853"
-        d="M16.04 15.35c-1.07.72-2.43 1.15-4.04 1.15a7.09 7.09 0 01-6.73-4.85l-4.12 3.44C3.28 19.38 7.3 22 12 22c3.21 0 6.13-1.12 8.35-3l-4.31-3.65z"
-      />
-      <path
-        fill="#4285F4"
-        d="M23.49 12.27c0-.82-.07-1.6-.21-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.43 3.56l4.31 3.65c2.52-2.31 3.99-5.71 3.99-9.45z"
-      />
-      <path
-        fill="#FBBC05"
-        d="M5.266 14.235A7.09 7.09 0 014.91 12c0-.79.13-1.56.36-2.24L1.14 6.33A11.97 11.97 0 000 12c0 2.05.52 4 1.43 5.7l3.83-3.46z"
-      />
-    </svg>
-  )
-}
+
 
 export function Header() {
   const { theme, toggleTheme } = useTheme()
@@ -75,10 +53,9 @@ export function Header() {
                   key={link.to}
                   to={link.to}
                   className={({ isActive }) =>
-                    `px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors ${
-                      isActive
-                        ? 'bg-[var(--accent-primary-soft)] text-[var(--accent-primary)]'
-                        : 'text-[var(--text-secondary)] hover:bg-[var(--bg-glass-hover)] hover:text-[var(--text-primary)]'
+                    `px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors ${isActive
+                      ? 'bg-[var(--accent-primary-soft)] text-[var(--accent-primary)]'
+                      : 'text-[var(--text-secondary)] hover:bg-[var(--bg-glass-hover)] hover:text-[var(--text-primary)]'
                     }`
                   }
                 >
