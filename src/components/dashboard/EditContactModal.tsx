@@ -6,7 +6,7 @@ import { toast } from '@/components/ui/Toast'
 import { Avatar } from '@/components/ui/Avatar'
 import { CameraCapture } from '@/components/ui/CameraCapture'
 import { ImageCropper } from '@/components/ui/ImageCropper'
-import { Upload, Camera } from 'lucide-react'
+import { Camera } from 'lucide-react'
 import type { Contact, UpdateContactParams } from '@/types'
 
 interface EditContactModalProps {
@@ -108,47 +108,40 @@ export function EditContactModal({ open, contact, onClose, onSave }: EditContact
         />
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {/* Avatar at top */}
-          <div className="flex flex-col gap-2 p-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-glass-hover)]">
-            <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-              Avatar Image
-            </label>
-            <div className="flex items-center gap-4">
-              <Avatar name={name || 'Contact'} src={avatarBase64} size="lg" className="border border-[var(--border-glass)]" />
-              <div className="flex flex-col gap-2 flex-1">
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="flex-1 gap-1"
-                  >
-                    <Upload className="w-3.5 h-3.5" />
-                    Upload
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => setIsTakingPhoto(true)}
-                    className="flex-1 gap-1"
-                  >
-                    <Camera className="w-3.5 h-3.5" />
-                    Camera
-                  </Button>
-                </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-                <p className="text-[10px] text-[var(--text-muted)] text-center">
-                  Square cropping will be applied
-                </p>
-              </div>
+          {/* Avatar — tap to take photo */}
+          <div className="flex flex-col items-center gap-3 py-2">
+            <button
+              type="button"
+              onClick={() => setIsTakingPhoto(true)}
+              className="group relative"
+              aria-label="Take photo for avatar"
+            >
+              <Avatar name={name || 'Contact'} src={avatarBase64} size="lg" className="!w-20 !h-20 !text-2xl ring-2 ring-[var(--border-glass)] ring-offset-2 ring-offset-[var(--bg-primary)] transition-transform group-hover:scale-105 group-active:scale-95" />
+              {/* Camera overlay */}
+              <span className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-[var(--accent-primary)] text-white flex items-center justify-center shadow-lg border-2 border-[var(--bg-primary)] transition-transform group-hover:scale-110">
+                <Camera className="w-4 h-4" />
+              </span>
+            </button>
+
+            <div className="flex flex-col items-center gap-0.5">
+              <p className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
+                Tap to change photo
+              </p>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="text-[11px] font-medium transition-colors hover:underline"
+                style={{ color: 'var(--accent-primary)' }}
+              >
+                or upload from gallery
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
             </div>
           </div>
 

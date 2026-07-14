@@ -37,28 +37,41 @@ function getInitials(name: string): string {
     .toUpperCase()
 }
 
+import { useState } from 'react'
+
 export function Avatar({ name, src, size = 'md', className }: AvatarProps) {
-  if (src) {
+  const [imgError, setImgError] = useState(false)
+
+  // Use custom uploaded image if available. Otherwise, fetch initials avatar from DiceBear.
+  // We use clean modern background colors matching our theme palette.
+  const dicebearUrl = `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(
+    name || 'U'
+  )}&chars=2&fontFamily=Arial,sans-serif&backgroundColor=6366f1,8b5cf6,a855f7,d946ef,ec4899,f43f5e,ef4444,f97316,22c55e,14b8a6,3b82f6`
+
+  const avatarSrc = src || dicebearUrl
+
+  if (imgError) {
     return (
-      <img
-        src={src}
-        alt={name}
-        className={cn('rounded-full object-cover shrink-0', sizes[size], className)}
-      />
+      <div
+        className={cn(
+          'rounded-full flex items-center justify-center font-bold text-white shrink-0',
+          sizes[size],
+          className
+        )}
+        style={{ backgroundColor: nameToColor(name || 'U') }}
+        aria-label={name}
+      >
+        {getInitials(name || 'U')}
+      </div>
     )
   }
 
   return (
-    <div
-      className={cn(
-        'rounded-full flex items-center justify-center font-bold text-white shrink-0',
-        sizes[size],
-        className
-      )}
-      style={{ backgroundColor: nameToColor(name) }}
-      aria-label={name}
-    >
-      {getInitials(name)}
-    </div>
+    <img
+      src={avatarSrc}
+      alt={name}
+      className={cn('rounded-full object-cover shrink-0 bg-[var(--bg-glass-hover)] border border-[var(--border-glass)]', sizes[size], className)}
+      onError={() => setImgError(true)}
+    />
   )
 }

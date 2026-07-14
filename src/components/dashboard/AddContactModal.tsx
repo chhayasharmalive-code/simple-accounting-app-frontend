@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Modal } from '@/components/ui/Modal'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
@@ -7,7 +7,7 @@ import type { CreateContactParams } from '@/types'
 import { CameraCapture } from '@/components/ui/CameraCapture'
 import { ImageCropper } from '@/components/ui/ImageCropper'
 import { Avatar } from '@/components/ui/Avatar'
-import { Upload, Camera } from 'lucide-react'
+import { Camera, UserPlus } from 'lucide-react'
 
 interface AddContactModalProps {
   open: boolean
@@ -24,6 +24,57 @@ export function AddContactModal({ open, onClose, onAdd }: AddContactModalProps) 
   const [isTakingPhoto, setIsTakingPhoto] = useState(false)
   const [loading, setLoading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const [isPickerSupported, setIsPickerSupported] = useState(false)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'contacts' in navigator && 'ContactsManager' in window) {
+      setIsPickerSupported(true)
+    }
+  }, [])
+
+  const handleImportContact = async () => {
+    try {
+      // @ts-ignore
+      const supported = await navigator.contacts.getProperties()
+      const props = []
+      if (supported.includes('name')) props.push('name')
+      if (supported.includes('tel')) props.push('tel')
+      if (supported.includes('icon')) props.push('icon')
+
+      // @ts-ignore
+      const selected = await navigator.contacts.select(props, { multiple: false })
+      if (selected && selected.length > 0) {
+        const contact = selected[0]
+        
+        // Extract Name
+        if (contact.name && contact.name.length > 0) {
+          setName(contact.name[0])
+        }
+        
+        // Extract Phone
+        if (contact.tel && contact.tel.length > 0) {
+          setPhone(contact.tel[0].trim())
+        }
+        
+        // Extract Avatar Icon
+        if (contact.icon && contact.icon.length > 0) {
+          const iconBlob = contact.icon[0]
+          const reader = new FileReader()
+          reader.onload = () => {
+            setAvatarBase64(reader.result as string)
+          }
+          reader.readAsDataURL(iconBlob)
+        }
+        
+        toast('Contact imported successfully!', 'success')
+      }
+    } catch (err) {
+      console.error('Contact picker error:', err)
+      if (err instanceof Error && err.name !== 'AbortError') {
+        toast('Failed to import contact.', 'error')
+      }
+    }
+  }
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -104,51 +155,53 @@ export function AddContactModal({ open, onClose, onAdd }: AddContactModalProps) 
         />
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {/* Avatar Option on Top */}
-          <div className="flex flex-col gap-2 p-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-glass-hover)]">
-            <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
-              Avatar Image
-            </label>
-            <div className="flex items-center gap-4">
-              <Avatar name={name || 'New'} src={avatarBase64} size="lg" className="border border-[var(--border-glass)]" />
-              
-              <div className="flex flex-col gap-2 flex-1">
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="flex-1 gap-1"
-                  >
-                    <Upload className="w-3.5 h-3.5" />
-                    Upload
-                  </Button>
-                  
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => setIsTakingPhoto(true)}
-                    className="flex-1 gap-1"
-                  >
-                    <Camera className="w-3.5 h-3.5" />
-                    Camera
-                  </Button>
-                </div>
-                
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-                
-                <p className="text-[10px] text-[var(--text-muted)] text-center leading-normal">
-                  Square cropping will be applied
-                </p>
-              </div>
+          {/* Contact Picker Button if supported */}
+          {isPickerSupported && (
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleImportContact}
+              className="w-full flex items-center justify-center gap-2 py-2 border-[var(--border-glass)] mb-2"
+            >
+              <UserPlus className="w-4 h-4 text-[var(--accent-primary)]" />
+              Import from Contacts
+            </Button>
+          )}
+
+          {/* Avatar — tap to take photo */}
+          <div className="flex flex-col items-center gap-3 py-2">
+            <button
+              type="button"
+              onClick={() => setIsTakingPhoto(true)}
+              className="group relative"
+              aria-label="Take photo for avatar"
+            >
+              <Avatar name={name || 'New'} src={avatarBase64} size="lg" className="!w-20 !h-20 !text-2xl ring-2 ring-[var(--border-glass)] ring-offset-2 ring-offset-[var(--bg-primary)] transition-transform group-hover:scale-105 group-active:scale-95" />
+              {/* Camera overlay */}
+              <span className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-[var(--accent-primary)] text-white flex items-center justify-center shadow-lg border-2 border-[var(--bg-primary)] transition-transform group-hover:scale-110">
+                <Camera className="w-4 h-4" />
+              </span>
+            </button>
+
+            <div className="flex flex-col items-center gap-0.5">
+              <p className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
+                Tap to take photo
+              </p>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="text-[11px] font-medium transition-colors hover:underline"
+                style={{ color: 'var(--accent-primary)' }}
+              >
+                or upload from gallery
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
             </div>
           </div>
 

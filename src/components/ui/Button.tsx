@@ -15,7 +15,7 @@ const variantStyles: Record<ButtonVariant, string> = {
   primary:
     'bg-[var(--accent-primary)] text-white hover:opacity-90 active:scale-[0.98]',
   secondary:
-    'glass glass-hover',
+    'glass glass-hover text-[var(--text-primary)] border-[var(--border-glass)]',
   ghost:
     'bg-transparent hover:bg-[var(--bg-glass)] active:scale-[0.98]',
   danger:
