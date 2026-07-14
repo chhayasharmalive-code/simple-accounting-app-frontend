@@ -4,6 +4,7 @@ import { ClerkProvider } from '@clerk/clerk-react'
 import { ThemeProvider } from '@/context/ThemeContext'
 import App from './App.tsx'
 import './index.css'
+import { SpeedInsights } from "@vercel/speed-insights/react"
 
 import { BrowserRouter } from 'react-router-dom'
 
@@ -19,6 +20,7 @@ createRoot(document.getElementById('root')!).render(
       <ThemeProvider>
         <BrowserRouter>
           <App />
+          <SpeedInsights />
         </BrowserRouter>
       </ThemeProvider>
     </ClerkProvider>
