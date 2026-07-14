@@ -43,7 +43,8 @@ export function ContactItem({
         'group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-colors duration-150',
         isSelected
           ? 'bg-[var(--accent-primary-soft)] border border-[var(--accent-primary)]/20'
-          : 'hover:bg-[var(--bg-glass-hover)] border border-transparent'
+          : 'hover:bg-[var(--bg-glass-hover)] border border-transparent',
+        mobileMenuOpen ? 'z-20' : 'z-0'
       )}
     >
       {/* Main clickable area */}

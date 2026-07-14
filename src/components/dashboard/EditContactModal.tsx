@@ -6,7 +6,8 @@ import { toast } from '@/components/ui/Toast'
 import { Avatar } from '@/components/ui/Avatar'
 import { CameraCapture } from '@/components/ui/CameraCapture'
 import { ImageCropper } from '@/components/ui/ImageCropper'
-import { Camera } from 'lucide-react'
+import { QrScanner } from '@/components/ui/QrScanner'
+import { Camera, QrCode } from 'lucide-react'
 import type { Contact, UpdateContactParams } from '@/types'
 
 interface EditContactModalProps {
@@ -23,6 +24,7 @@ export function EditContactModal({ open, contact, onClose, onSave }: EditContact
   const [avatarBase64, setAvatarBase64] = useState<string | undefined>()
   const [pendingImageSrc, setPendingImageSrc] = useState<string | null>(null)
   const [isTakingPhoto, setIsTakingPhoto] = useState(false)
+  const [isScanningQr, setIsScanningQr] = useState(false)
   const [loading, setLoading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
@@ -49,6 +51,41 @@ export function EditContactModal({ open, contact, onClose, onSave }: EditContact
   const handleCameraCapture = (imageSrc: string) => {
     setPendingImageSrc(imageSrc)
     setIsTakingPhoto(false)
+  }
+
+  const parseUpiQrCode = (qrData: string) => {
+    try {
+      const decoded = decodeURIComponent(qrData).trim()
+      if (decoded.startsWith('upi://pay')) {
+        const url = new URL(decoded)
+        const pa = url.searchParams.get('pa') || ''
+        const pn = url.searchParams.get('pn') || ''
+        return { upiId: pa, name: pn }
+      }
+      if (decoded.includes('@')) {
+        const parts = decoded.split('@')
+        if (parts.length === 2 && parts[0].length > 0 && parts[1].length > 0) {
+          return { upiId: decoded, name: '' }
+        }
+      }
+    } catch (err) {
+      console.error('Failed to parse UPI QR:', err)
+    }
+    return null
+  }
+
+  const handleQrScan = (decodedText: string) => {
+    const result = parseUpiQrCode(decodedText)
+    if (result) {
+      setUpiId(result.upiId)
+      if (result.name && !name) {
+        setName(result.name)
+      }
+      toast('UPI QR scanned successfully!', 'success')
+    } else {
+      toast('Invalid UPI QR code format.', 'error')
+    }
+    setIsScanningQr(false)
   }
 
   const handleCropComplete = (croppedBase64: string) => {
@@ -84,12 +121,14 @@ export function EditContactModal({ open, contact, onClose, onSave }: EditContact
     setAvatarBase64(undefined)
     setPendingImageSrc(null)
     setIsTakingPhoto(false)
+    setIsScanningQr(false)
     onClose()
   }
 
   const getTitle = () => {
     if (pendingImageSrc) return 'Crop Avatar'
     if (isTakingPhoto) return 'Take Photo'
+    if (isScanningQr) return 'Scan UPI QR Code'
     return 'Edit Contact'
   }
 
@@ -105,6 +144,11 @@ export function EditContactModal({ open, contact, onClose, onSave }: EditContact
         <CameraCapture
           onCapture={handleCameraCapture}
           onCancel={() => setIsTakingPhoto(false)}
+        />
+      ) : isScanningQr ? (
+        <QrScanner
+          onScan={handleQrScan}
+          onCancel={() => setIsScanningQr(false)}
         />
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -168,6 +212,16 @@ export function EditContactModal({ open, contact, onClose, onSave }: EditContact
             placeholder="name@upi"
             value={upiId}
             onChange={(e) => setUpiId(e.target.value)}
+            rightElement={
+              <button
+                type="button"
+                onClick={() => setIsScanningQr(true)}
+                className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-[var(--bg-glass-hover)] active:scale-95 text-[var(--accent-primary)]"
+                title="Scan UPI QR Code"
+              >
+                <QrCode className="w-4.5 h-4.5" />
+              </button>
+            }
           />
 
           <Button type="submit" loading={loading} className="w-full mt-2">

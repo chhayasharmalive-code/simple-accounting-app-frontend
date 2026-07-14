@@ -54,7 +54,7 @@ export function DashboardPage() {
       {/* Grid Dashboard */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Recent Contacts Column */}
-        <GlassCard className="p-4 flex flex-col justify-between">
+        <GlassCard className="p-4 flex flex-col justify-between relative z-10">
           <div>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
@@ -89,7 +89,7 @@ export function DashboardPage() {
         </GlassCard>
 
         {/* Recent Transactions Column */}
-        <GlassCard className="p-4 flex flex-col justify-between">
+        <GlassCard className="p-4 flex flex-col justify-between relative z-0">
           <div>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">

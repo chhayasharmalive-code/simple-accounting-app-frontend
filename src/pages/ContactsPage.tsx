@@ -2,7 +2,7 @@ import { useData } from '@/context/DataContext'
 import { ContactList } from '@/components/dashboard/ContactList'
 import { TransactionItem } from '@/components/dashboard/TransactionItem'
 import { GlassCard } from '@/components/ui/GlassCard'
-import { X, ArrowLeft } from 'lucide-react'
+import { X, ArrowLeft, MessageCircle } from 'lucide-react'
 import { formatINR } from '@/lib/format'
 
 export function ContactsPage() {
@@ -34,6 +34,22 @@ export function ContactsPage() {
   )
 
   const netBalance = contactStats.lent - contactStats.borrowed
+
+  const getWhatsAppLink = (name: string, phone: string, amount: number, upiId?: string) => {
+    let cleanPhone = phone.replace(/\D/g, '')
+    if (cleanPhone.length === 10) {
+      cleanPhone = '91' + cleanPhone
+    }
+
+    const upiTextEn = upiId ? ` to UPI ID: ${upiId}` : ''
+    const upiTextHi = upiId ? ` (UPI ID: ${upiId} पर)` : ''
+
+    const messageEn = `Hi ${name}, hope you are doing well. This is a gentle reminder regarding the pending balance of ₹${amount} on unbox Pay. You can settle it${upiTextEn}. Thank you!`
+    const messageHi = `नमस्ते ${name}, आशा है आप ठीक होंगे। unbox Pay पर ₹${amount} के लंबित भुगतान के संबंध में यह एक विनम्र अनुस्मारक (reminder) है। आप इसे चुकाने के लिए इस लिंक या UPI का उपयोग कर सकते हैं${upiTextHi}। धन्यवाद!`
+
+    const fullMessage = `${messageEn}\n\n${messageHi}`
+    return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(fullMessage)}`
+  }
 
   return (
     <div className="flex flex-col gap-6 w-full max-w-5xl mx-auto px-4 py-6">
@@ -136,6 +152,19 @@ export function ContactsPage() {
                   </span>
                 </div>
               </div>
+
+              {/* WhatsApp reminder button if they owe you money and have a phone number */}
+              {netBalance > 0 && selectedContact.phone && (
+                <a
+                  href={getWhatsAppLink(selectedContact.name, selectedContact.phone, Math.abs(netBalance), selectedContact.upiId || undefined)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all bg-[#25D366] text-white hover:opacity-90 active:scale-[0.98] shadow-sm mt-1"
+                >
+                  <MessageCircle className="w-4 h-4 shrink-0" />
+                  Send WhatsApp Reminder
+                </a>
+              )}
             </GlassCard>
 
             {/* Transaction Ledger */}

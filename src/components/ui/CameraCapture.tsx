@@ -12,6 +12,7 @@ type FacingMode = 'environment' | 'user'
 export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
+  const isMountedRef = useRef(true)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [facingMode, setFacingMode] = useState<FacingMode>('environment')
@@ -56,6 +57,13 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
       }
     }
 
+    if (!isMountedRef.current) {
+      if (stream) {
+        stream.getTracks().forEach((t) => t.stop())
+      }
+      return
+    }
+
     if (!stream) {
       setError('Could not access camera. Please check permissions.')
       setLoading(false)
@@ -70,9 +78,13 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
   }, [])
 
   useEffect(() => {
+    isMountedRef.current = true
     startCamera('environment')
     return () => {
-      streamRef.current?.getTracks().forEach((t) => t.stop())
+      isMountedRef.current = false
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((t) => t.stop())
+      }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
