@@ -4,6 +4,7 @@ import type {
   CreateContactParams,
   UpdateContactParams,
   CreateTransactionParams,
+  DashboardData,
 } from '../types'
 
 // ─── API Client ─────────────────────────────────────────────────────────────
@@ -106,6 +107,13 @@ export class ApiClient {
         headers: h,
         body: JSON.stringify(params),
       })
+    )
+  }
+
+  async getDashboard(): Promise<DashboardData> {
+    const h = await this.headers()
+    return this.unwrap<DashboardData>(
+      await fetch(`${this.apiBase}/api/dashboard`, { headers: h })
     )
   }
 }

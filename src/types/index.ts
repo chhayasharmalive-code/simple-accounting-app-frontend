@@ -52,3 +52,53 @@ export interface CreateTransactionParams {
   type: 'GIVEN' | 'TAKEN'
   reference?: string
 }
+
+// ─── Dashboard API Data Shapes ──────────────────────────────────────────────
+
+export interface DashboardData {
+  kpis: {
+    netBalance: number
+    totalReceivable: number
+    totalPayable: number
+    activeDebtors: number
+    activeCreditors: number
+    totalContacts: number
+    totalTransactionsCount: number
+  }
+  charts: {
+    dailyTrends: Array<{ date: string; lent: number; borrowed: number }>
+    monthlyTrends: Array<{ month: string; lent: number; borrowed: number }>
+    distribution: {
+      totalLentEver: number
+      totalBorrowedEver: number
+    }
+  }
+  insights: {
+    topDebtors: Array<{
+      contactId: string
+      contactName: string
+      contactAvatar: string | null
+      balance: number
+    }>
+    topCreditors: Array<{
+      contactId: string
+      contactName: string
+      contactAvatar: string | null
+      balance: number
+    }>
+    peakLendingMonth: { month: string; amount: number } | null
+    peakBorrowingMonth: { month: string; amount: number } | null
+    peakLendingDay: { date: string; amount: number } | null
+    peakBorrowingDay: { date: string; amount: number } | null
+  }
+  recentActivities: Array<{
+    id: string
+    contactId: string
+    contactName: string
+    contactAvatar: string | null
+    amount: number | string
+    type: 'GIVEN' | 'TAKEN'
+    reference: string | null
+    createdAt: string
+  }>
+}

@@ -25,10 +25,10 @@ export function FAB() {
       {/* Sub-buttons list */}
       <div
         className={cn(
-          'flex flex-col gap-2.5 transition-all duration-300 transform origin-bottom',
+          'flex flex-col gap-2.5 transition-all duration-200 origin-bottom',
           open
-            ? 'opacity-100 translate-y-0 scale-100'
-            : 'opacity-0 translate-y-4 scale-90 pointer-events-none'
+            ? 'opacity-100 pointer-events-auto'
+            : 'opacity-0 pointer-events-none'
         )}
       >
         {/* Add Transaction Button */}
@@ -37,13 +37,18 @@ export function FAB() {
             setAddTransactionOpen(true)
             setOpen(false)
           }}
-          className="flex items-center gap-2 px-3 py-2 rounded-xl glass border border-[var(--border-glass)] shadow-lg hover:bg-[var(--bg-glass-hover)] active:scale-95 transition-all text-sm font-semibold"
-          style={{ color: 'var(--text-primary)' }}
+          className="flex items-center gap-3 pl-2.5 pr-4 py-2 rounded-xl border border-[var(--border-glass)] shadow-lg hover:bg-[var(--bg-glass-hover)] active:scale-95 transition-all text-sm font-semibold"
+          style={{
+            background: 'var(--bg-glass)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            color: 'var(--text-primary)',
+          }}
         >
-          <span className="text-xs uppercase tracking-wide opacity-80">Add Transaction</span>
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[var(--accent-emerald-soft)] text-[var(--accent-emerald)]">
-            <FilePlus className="w-4 h-4" />
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[var(--accent-emerald-soft)] text-[var(--accent-emerald)] shrink-0">
+            <FilePlus className="w-4.5 h-4.5" />
           </div>
+          <span className="tracking-wide">Add Transaction</span>
         </button>
 
         {/* Add Contact Button */}
@@ -52,13 +57,18 @@ export function FAB() {
             setAddContactOpen(true)
             setOpen(false)
           }}
-          className="flex items-center gap-2 px-3 py-2 rounded-xl glass border border-[var(--border-glass)] shadow-lg hover:bg-[var(--bg-glass-hover)] active:scale-95 transition-all text-sm font-semibold"
-          style={{ color: 'var(--text-primary)' }}
+          className="flex items-center gap-3 pl-2.5 pr-4 py-2 rounded-xl border border-[var(--border-glass)] shadow-lg hover:bg-[var(--bg-glass-hover)] active:scale-95 transition-all text-sm font-semibold"
+          style={{
+            background: 'var(--bg-glass)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            color: 'var(--text-primary)',
+          }}
         >
-          <span className="text-xs uppercase tracking-wide opacity-80">Add Contact</span>
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[var(--accent-primary-soft)] text-[var(--accent-primary)]">
-            <UserPlus className="w-4 h-4" />
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[var(--accent-primary-soft)] text-[var(--accent-primary)] shrink-0">
+            <UserPlus className="w-4.5 h-4.5" />
           </div>
+          <span className="tracking-wide">Add Contact</span>
         </button>
       </div>
 

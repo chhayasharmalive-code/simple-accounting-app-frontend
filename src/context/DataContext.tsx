@@ -3,7 +3,7 @@ import { useAuth, useUser } from '@clerk/clerk-react'
 import { ApiClient } from '@/services/api-client'
 import { useContacts } from '@/hooks/useContacts'
 import { useTransactions } from '@/hooks/useTransactions'
-import type { Contact, Transaction, DashboardStats, CreateContactParams, UpdateContactParams, CreateTransactionParams } from '@/types'
+import type { Contact, Transaction, DashboardStats, CreateContactParams, UpdateContactParams, CreateTransactionParams, DashboardData } from '@/types'
 
 interface DataContextType {
   apiClient: ApiClient | null
@@ -20,6 +20,9 @@ interface DataContextType {
   createTransaction: (params: CreateTransactionParams) => Promise<boolean>
   stats: DashboardStats
   contactBalances: Record<string, number>
+  dashboardData: DashboardData | null
+  dashboardLoading: boolean
+  fetchDashboard: () => Promise<void>
 
   // Shared modal states for global trigger
   addContactOpen: boolean
@@ -78,34 +81,64 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     createTransaction: apiCreateTransaction,
   } = useTransactions(apiClient)
 
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
+  const [dashboardLoading, setDashboardLoading] = useState(true)
+
+  const fetchDashboard = useCallback(async () => {
+    if (!apiClient) return
+    setDashboardLoading(true)
+    try {
+      const data = await apiClient.getDashboard()
+      setDashboardData(data)
+    } catch (err) {
+      console.error('Failed to fetch dashboard data:', err)
+    } finally {
+      setDashboardLoading(false)
+    }
+  }, [apiClient])
+
   // Trigger initial fetches when user is loaded
   useEffect(() => {
     if (user) {
       fetchContacts()
       fetchTransactions()
+      fetchDashboard()
     }
-  }, [user, fetchContacts, fetchTransactions])
+  }, [user, fetchContacts, fetchTransactions, fetchDashboard])
 
   const createContact = useCallback(async (params: CreateContactParams) => {
-    return apiCreateContact(params)
-  }, [apiCreateContact])
+    const success = await apiCreateContact(params)
+    if (success) {
+      fetchDashboard()
+    }
+    return success
+  }, [apiCreateContact, fetchDashboard])
 
   const updateContact = useCallback(async (id: string, params: UpdateContactParams) => {
-    return apiUpdateContact(id, params)
-  }, [apiUpdateContact])
+    const success = await apiUpdateContact(id, params)
+    if (success) {
+      fetchDashboard()
+    }
+    return success
+  }, [apiUpdateContact, fetchDashboard])
 
   const deleteContact = useCallback(async (id: string) => {
-    return apiDeleteContact(id)
-  }, [apiDeleteContact])
+    const success = await apiDeleteContact(id)
+    if (success) {
+      fetchDashboard()
+    }
+    return success
+  }, [apiDeleteContact, fetchDashboard])
 
   const createTransaction = useCallback(async (params: CreateTransactionParams) => {
     const success = await apiCreateTransaction(params)
     if (success) {
       // Refresh contacts to update balances immediately
       fetchContacts()
+      fetchDashboard()
     }
     return success
-  }, [apiCreateTransaction, fetchContacts])
+  }, [apiCreateTransaction, fetchContacts, fetchDashboard])
 
   const value = useMemo(() => ({
     apiClient,
@@ -121,6 +154,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     createTransaction,
     stats,
     contactBalances,
+    dashboardData,
+    dashboardLoading,
+    fetchDashboard,
 
     // Modal triggers
     addContactOpen,
@@ -147,6 +183,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     createTransaction,
     stats,
     contactBalances,
+    dashboardData,
+    dashboardLoading,
+    fetchDashboard,
     addContactOpen,
     addTransactionOpen,
     editContact,
