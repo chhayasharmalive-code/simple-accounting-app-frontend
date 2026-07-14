@@ -22,6 +22,7 @@ interface DataContextType {
   contactBalances: Record<string, number>
   dashboardData: DashboardData | null
   dashboardLoading: boolean
+  dashboardRefreshing: boolean
   fetchDashboard: () => Promise<void>
 
   // Shared modal states for global trigger
@@ -83,10 +84,17 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
   const [dashboardLoading, setDashboardLoading] = useState(true)
+  const [dashboardRefreshing, setDashboardRefreshing] = useState(false)
 
   const fetchDashboard = useCallback(async () => {
     if (!apiClient) return
-    setDashboardLoading(true)
+    // Only show full skeleton on the very first load (no data yet)
+    // Subsequent refreshes use the lightweight "refreshing" flag
+    setDashboardData((prev) => {
+      if (prev === null) setDashboardLoading(true)
+      else setDashboardRefreshing(true)
+      return prev
+    })
     try {
       const data = await apiClient.getDashboard()
       setDashboardData(data)
@@ -94,6 +102,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       console.error('Failed to fetch dashboard data:', err)
     } finally {
       setDashboardLoading(false)
+      setDashboardRefreshing(false)
     }
   }, [apiClient])
 
@@ -156,6 +165,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     contactBalances,
     dashboardData,
     dashboardLoading,
+    dashboardRefreshing,
     fetchDashboard,
 
     // Modal triggers
@@ -185,6 +195,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     contactBalances,
     dashboardData,
     dashboardLoading,
+    dashboardRefreshing,
     fetchDashboard,
     addContactOpen,
     addTransactionOpen,
