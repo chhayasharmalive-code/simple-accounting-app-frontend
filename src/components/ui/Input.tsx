@@ -1,12 +1,13 @@
 import { cn } from '@/lib/utils'
-import type { InputHTMLAttributes } from 'react'
+import type { InputHTMLAttributes, ReactNode } from 'react'
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string
   error?: string
+  rightElement?: ReactNode
 }
 
-export function Input({ label, error, id, className, ...props }: InputProps) {
+export function Input({ label, error, id, className, rightElement, ...props }: InputProps) {
   const inputId = id || label.toLowerCase().replace(/\s+/g, '-')
 
   return (
@@ -18,15 +19,23 @@ export function Input({ label, error, id, className, ...props }: InputProps) {
       >
         {label}
       </label>
-      <input
-        id={inputId}
-        className={cn(
-          'glass-input h-10 px-3 text-sm w-full',
-          error && 'border-[var(--accent-rose)]',
-          className
+      <div className="relative flex items-center w-full">
+        <input
+          id={inputId}
+          className={cn(
+            'glass-input h-10 pl-3 text-sm w-full',
+            rightElement ? 'pr-11' : 'pr-3',
+            error && 'border-[var(--accent-rose)]',
+            className
+          )}
+          {...props}
+        />
+        {rightElement && (
+          <div className="absolute right-1 flex items-center justify-center">
+            {rightElement}
+          </div>
         )}
-        {...props}
-      />
+      </div>
       {error && (
         <p className="text-xs" style={{ color: 'var(--accent-rose)' }}>
           {error}

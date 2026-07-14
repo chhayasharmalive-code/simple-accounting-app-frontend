@@ -155,19 +155,6 @@ export function AddContactModal({ open, onClose, onAdd }: AddContactModalProps) 
         />
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {/* Contact Picker Button if supported */}
-          {isPickerSupported && (
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleImportContact}
-              className="w-full flex items-center justify-center gap-2 py-2 border-[var(--border-glass)] mb-2"
-            >
-              <UserPlus className="w-4 h-4 text-[var(--accent-primary)]" />
-              Import from Contacts
-            </Button>
-          )}
-
           {/* Avatar — tap to take photo */}
           <div className="flex flex-col items-center gap-3 py-2">
             <button
@@ -212,6 +199,18 @@ export function AddContactModal({ open, onClose, onAdd }: AddContactModalProps) 
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
+            rightElement={
+              isPickerSupported ? (
+                <button
+                  type="button"
+                  onClick={handleImportContact}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-[var(--bg-glass-hover)] active:scale-95 text-[var(--accent-primary)]"
+                  title="Import from phone contacts"
+                >
+                  <UserPlus className="w-4.5 h-4.5" />
+                </button>
+              ) : undefined
+            }
           />
 
           <Input
