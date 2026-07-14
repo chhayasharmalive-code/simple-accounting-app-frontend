@@ -2,8 +2,8 @@ import { useTheme } from '@/context/ThemeContext'
 import { useUser, useClerk } from '@clerk/clerk-react'
 import { Sun, Moon, LogOut } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
-
 import { NavLink } from 'react-router-dom'
+import logoImg from '@/assets/qr_image.png'
 
 
 
@@ -32,12 +32,12 @@ export function Header() {
         {/* Brand & Nav */}
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
-            <span className="text-xl">💰</span>
+            <img src={logoImg} alt="unbox Pay Logo" className="w-6 h-6 object-contain rounded-md" />
             <h1
               className="text-base font-bold tracking-tight"
               style={{ color: 'var(--text-primary)' }}
             >
-              HisaabKitaab
+              unbox Pay
             </h1>
           </div>
 
